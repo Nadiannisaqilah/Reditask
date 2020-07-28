@@ -1,7 +1,7 @@
 package com.example.reditask.model;
 
 public class Task {
-    private String task_title, task_desc, task_date, task_time;
+    private String task_title, task_desc, task_date, task_time, key;
 
     public Task(String task_title, String task_desc, String task_date, String task_time) {
         this.task_title = task_title;
@@ -11,6 +11,14 @@ public class Task {
     }
 
     public Task() {
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getTask_title() {
