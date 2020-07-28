@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "650065351206",
+    "firebase_url": "https://reditask-25d78.firebaseio.com",
+    "project_id": "reditask-25d78",
+    "storage_bucket": "reditask-25d78.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:650065351206:android:f9a1697c36a2aa53520ce7",
+        "android_client_info": {
+          "package_name": "com.example.reditask"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "650065351206-ti2u7tk57ctklnei9mit3j5hg0m352v0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.reditask",
+            "certificate_hash": "cf40adcfea8d02c7ea755d4d415f46fda24f3ca0"
+          }
+        },
+        {
+          "client_id": "650065351206-j9i06egukvsfl2ats5s1dqbke61u52l9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAP14s_5bvulTl_AzAu6ntqF_dOTVdi57U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "650065351206-j9i06egukvsfl2ats5s1dqbke61u52l9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
