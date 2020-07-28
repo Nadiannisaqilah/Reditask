@@ -2,7 +2,9 @@ package com.example.reditask.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -11,16 +13,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.reditask.R;
 import com.example.reditask.adapter.TaskAdapter;
 import com.example.reditask.model.Task;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     private DatabaseReference mDatabase;
     private TaskAdapter taskAdapter;
     private RecyclerView rvTask;
+    private ArrayList<Task> listTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,42 +38,53 @@ public class MainActivity extends AppCompatActivity {
         rvTask = findViewById(R.id.rv_tasks);
         setSupportActionBar(toolbar);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference("Task");
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         displayListTask();
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> toaddtask());
+
+        listener();
+    }
+
+    private void listener() {
     }
 
     private void displayListTask() {
-        rvTask.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        rvTask.setLayoutManager(linearLayoutManager);
+        mDatabase.child("Task").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                listTask = new ArrayList<>();
 
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Task task = dataSnapshot.getValue(Task.class);
 
-        FirebaseRecyclerOptions<Task> taskFirebaseRecyclerOptions = new FirebaseRecyclerOptions.Builder<Task>()
-                .setQuery(mDatabase, Task.class)
-                .build();
-        taskAdapter = new TaskAdapter(taskFirebaseRecyclerOptions);
-        taskAdapter.notifyDataSetChanged();
-        rvTask.setAdapter(taskAdapter);
-    }
+                    if (task != null) {
+                        task.setKey(dataSnapshot.getKey());
+                    }
+                    listTask.add(task);
+                }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (taskAdapter != null) {
-            taskAdapter.startListening();
-        }
-    }
+                rvTask.setHasFixedSize(true);
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(MainActivity.this);
+                rvTask.setLayoutManager(linearLayoutManager);
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (taskAdapter != null) {
-            taskAdapter.stopListening();
-        }
+                taskAdapter = new TaskAdapter(listTask);
+                taskAdapter.notifyDataSetChanged();
+                rvTask.setAdapter(taskAdapter);
+
+                taskAdapter.setOnListTaskClick(key ->
+                        Toast.makeText(MainActivity.this, key, Toast.LENGTH_SHORT).show()
+                );
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getApplicationContext(), "Data Gagal Dimuat", Toast.LENGTH_LONG).show();
+            }
+        });
+
     }
 
     public void toaddtask() {

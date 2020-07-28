@@ -10,13 +10,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.reditask.R;
 import com.example.reditask.model.Task;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 
-public class TaskAdapter extends FirebaseRecyclerAdapter<Task, TaskAdapter.TaskViewHolder> {
+import java.util.ArrayList;
 
-    public TaskAdapter(@NonNull FirebaseRecyclerOptions<Task> options) {
-        super(options);
+public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
+
+    private ArrayList<Task> listTask;
+    private OnListClickListener onListClickListener;
+
+    public TaskAdapter(ArrayList<Task> listTask) {
+        this.listTask = listTask;
+    }
+
+    public void setOnListTaskClick(OnListClickListener onListClickListener) {
+        this.onListClickListener = onListClickListener;
     }
 
     @NonNull
@@ -27,10 +34,16 @@ public class TaskAdapter extends FirebaseRecyclerAdapter<Task, TaskAdapter.TaskV
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull TaskViewHolder taskViewHolder, int i, @NonNull Task task) {
-        taskViewHolder.title.setText(task.getTask_title());
-        taskViewHolder.desc.setText(task.getTask_desc());
-        taskViewHolder.date.setText(task.getTask_date());
+    public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
+        holder.title.setText(listTask.get(position).getTask_title());
+        holder.desc.setText(listTask.get(position).getTask_desc());
+        holder.date.setText(listTask.get(position).getTask_date());
+        holder.itemView.setOnClickListener(v -> onListClickListener.onListClickListener(listTask.get(position).getKey()));
+    }
+
+    @Override
+    public int getItemCount() {
+        return listTask.size();
     }
 
     static class TaskViewHolder extends RecyclerView.ViewHolder {
@@ -43,5 +56,9 @@ public class TaskAdapter extends FirebaseRecyclerAdapter<Task, TaskAdapter.TaskV
             desc = itemView.findViewById(R.id.desc_task);
             date = itemView.findViewById(R.id.date_task);
         }
+    }
+
+    public interface OnListClickListener {
+        void onListClickListener(String key);
     }
 }
