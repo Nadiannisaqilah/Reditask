@@ -6,6 +6,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.example.reditask.R;
 import com.example.reditask.model.Task;
@@ -30,6 +31,10 @@ public class AddTask extends AppCompatActivity {
         //[START Initialize DB]
         taskDB = FirebaseDatabase.getInstance().getReference();
         //[END Initialize DB]
+
+        Toolbar toolbar = findViewById(R.id.addtoolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         date = findViewById(R.id.et_date);
         time = findViewById(R.id.et_time);
@@ -85,5 +90,11 @@ public class AddTask extends AppCompatActivity {
                         });
             }
         });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return super.onSupportNavigateUp();
     }
 }

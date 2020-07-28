@@ -6,23 +6,37 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:padding="8dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.AddTask">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/parent_addtoolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:theme="@style/AppTheme.AppBarOverlay"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/addtoolbar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/colorPrimary"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
+        </com.google.android.material.appbar.AppBarLayout>
 
         <TextView
             android:id="@+id/tv_taskname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="20dp"
             android:layout_marginRight="5dp"
             android:text="Task Name"
             android:textStyle="bold"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/parent_addtoolbar" />
 
         <EditText
             android:id="@+id/et_taskname"
@@ -30,33 +44,31 @@
             android:layout_height="wrap_content"
             android:padding="16dp"
             android:layout_marginLeft="5dp"
-            android:layout_marginTop="25dp"
             android:layout_marginRight="5dp"
             android:background="@drawable/border_background"
             android:textSize="15sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/tv_taskname" />
 
         <TextView
             android:id="@+id/tv_taskdesc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="20dp"
             android:layout_marginRight="5dp"
             android:text="Description"
             android:textStyle="bold"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/et_taskname" />
 
         <EditText
             android:id="@+id/et_taskdesc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
-            android:layout_marginTop="100dp"
             android:layout_marginRight="5dp"
             android:background="@drawable/border_background"
             android:gravity="top"
@@ -69,7 +81,7 @@
             android:textSize="15sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/tv_taskdesc" />
 
         <TextView
             android:id="@+id/tv_taskdate"
