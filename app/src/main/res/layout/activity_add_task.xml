@@ -6,9 +6,10 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:padding="8dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".AddTask">
+        tools:context=".ui.AddTask">
 
         <TextView
             android:id="@+id/tv_taskname"
@@ -26,7 +27,8 @@
         <EditText
             android:id="@+id/et_taskname"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
             android:layout_marginLeft="5dp"
             android:layout_marginTop="25dp"
             android:layout_marginRight="5dp"
@@ -58,6 +60,7 @@
             android:layout_marginRight="5dp"
             android:background="@drawable/border_background"
             android:gravity="top"
+            android:padding="16dp"
             android:inputType="textMultiLine"
             android:lines="8"
             android:maxLines="10"
@@ -122,13 +125,14 @@
 
         <Button
             android:id="@+id/bt_submit"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Submit"
             android:layout_marginTop="20dp"
             android:background="@drawable/button_hover"
+            android:text="Submit"
+            app:layout_constraintEnd_toEndOf="@+id/et_taskdesc"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/et_taskdesc"
             app:layout_constraintTop_toBottomOf="@id/et_time" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

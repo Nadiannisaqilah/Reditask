@@ -1,4 +1,4 @@
-package com.example.reditask;
+package com.example.reditask.model;
 
 public class Task {
     private String task_title, task_desc, task_date, task_time;
@@ -8,6 +8,9 @@ public class Task {
         this.task_desc = task_desc;
         this.task_date = task_date;
         this.task_time = task_time;
+    }
+
+    public Task() {
     }
 
     public String getTask_title() {
