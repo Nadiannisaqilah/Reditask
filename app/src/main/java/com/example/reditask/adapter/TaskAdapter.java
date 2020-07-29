@@ -38,7 +38,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         holder.title.setText(listTask.get(position).getTask_title());
         holder.desc.setText(listTask.get(position).getTask_desc());
         holder.date.setText(listTask.get(position).getTask_date());
-        holder.itemView.setOnClickListener(v -> onListClickListener.onListClickListener(listTask.get(position).getKey()));
+        holder.itemView.setOnClickListener(v -> onListClickListener.onListClickListener(listTask, position));
     }
 
     @Override
@@ -59,6 +59,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     }
 
     public interface OnListClickListener {
-        void onListClickListener(String key);
+        void onListClickListener(ArrayList<Task> list, int postion);
     }
 }

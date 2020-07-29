@@ -74,9 +74,20 @@ public class MainActivity extends AppCompatActivity {
                 taskAdapter.notifyDataSetChanged();
                 rvTask.setAdapter(taskAdapter);
 
-                taskAdapter.setOnListTaskClick(key ->
-                        Toast.makeText(MainActivity.this, key, Toast.LENGTH_SHORT).show()
-                );
+                taskAdapter.setOnListTaskClick(new TaskAdapter.OnListClickListener() {
+                    @Override
+                    public void onListClickListener(ArrayList<Task> list, int postion) {
+                        Bundle bundle = new Bundle();
+                        bundle.putString("title", list.get(postion).getTask_title());
+                        bundle.putString("desc", list.get(postion).getTask_desc());
+                        bundle.putString("date", list.get(postion).getTask_date());
+                        bundle.putString("time", list.get(postion).getTask_time());
+                        bundle.putString("key", list.get(postion).getKey());
+                        Intent intent = new Intent(MainActivity.this, AddTask.class);
+                        intent.putExtras(bundle);
+                        startActivity(intent);
+                    }
+                });
             }
 
             @Override
