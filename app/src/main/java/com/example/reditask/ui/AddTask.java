@@ -1,5 +1,6 @@
 package com.example.reditask.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
@@ -17,14 +18,12 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
 import java.util.Calendar;
+import java.util.Objects;
 
 public class AddTask extends AppCompatActivity {
-    private static final String TAG = "AddTask";
-    private static final String REQUIRED = "Required";
     public EditText date, time, title, desc;
     public Button submit;
     private DatabaseReference taskDB;
-    private String status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +47,6 @@ public class AddTask extends AppCompatActivity {
 
         // Check Update or Create Form
         checkUpdateOrCreateForm();
-
         // Listener
         listener();
     }
@@ -58,7 +56,8 @@ public class AddTask extends AppCompatActivity {
             Calendar now = Calendar.getInstance();
             DatePickerDialog dpd = DatePickerDialog.newInstance(
                     (view1, year, monthOfYear, dayOfMonth) -> {
-                        date.setText(year + "-" + monthOfYear + "-" + dayOfMonth);
+                        int month = monthOfYear + 1;
+                        date.setText(year + "-" + month + "-" + dayOfMonth);
                     },
                     now.get(Calendar.YEAR), // Initial year selection
                     now.get(Calendar.MONTH), // Initial month selection
@@ -88,7 +87,20 @@ public class AddTask extends AppCompatActivity {
             String formDate = date.getText().toString();
             String formTime = time.getText().toString();
 
-            switch (status) {
+            switch (getIntent().getStringExtra("status")) {
+                case "create":
+                    if (TextUtils.isEmpty(formTitle) || TextUtils.isEmpty(formDesc) || formDate == "Set Date" || formTime == "Set Time") {
+                        Toast.makeText(this, "Data tidak boleh ada yang kosong!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        taskDB.child("Task").push()
+                                .setValue(new Task(formTitle, formDesc, formDate, formTime))
+                                .addOnSuccessListener(this, aVoid -> {
+                                    Toast.makeText(this, "Data berhasil disimpan", Toast.LENGTH_SHORT).show();
+                                    Intent i = new Intent(AddTask.this, MainActivity.class);
+                                    startActivity(i);
+                                });
+                    }
+                    break;
                 case "edit":
                     if (TextUtils.isEmpty(formTitle) || TextUtils.isEmpty(formDesc) || formDate == "Set Date" || formTime == "Set Time") {
                         Toast.makeText(this, "Data tidak boleh ada yang kosong!", Toast.LENGTH_SHORT).show();
@@ -101,44 +113,23 @@ public class AddTask extends AppCompatActivity {
                         updateTask(setTask);
                     }
                     break;
-                case "create":
-                    if (TextUtils.isEmpty(formTitle) || TextUtils.isEmpty(formDesc) || formDate == "Set Date" || formTime == "Set Time") {
-                        Toast.makeText(this, "Data tidak boleh ada yang kosong!", Toast.LENGTH_SHORT).show();
-                    } else {
-                        taskDB.child("Task").push()
-                                .setValue(new Task(formTitle, formDesc, formDate, formTime))
-                                .addOnSuccessListener(this, aVoid -> {
-                                    Toast.makeText(this, "Data berhasil disimpan", Toast.LENGTH_SHORT).show();
-                                    title.setText("");
-                                    desc.setText("");
-                                    date.setText("Set Date");
-                                    time.setText("Set Time");
-                                });
-                    }
-                    break;
             }
-
 
         });
     }
 
     private void checkUpdateOrCreateForm() {
-        if (getIntent().getExtras() != null) {
-            if (getIntent().getExtras().getString("key") != null) {
-                getData();
-                status = "edit";
-            } else {
-                status = "create";
-            }
+        if (Objects.equals(Objects.requireNonNull(getIntent().getExtras()).getString("status"), "edit")) {
+            getData();
         }
     }
 
     private void getData() {
         if (getIntent().getExtras() != null) {
-            final String getTitle = getIntent().getExtras().getString("title");
-            final String getDesc = getIntent().getExtras().getString("desc");
-            final String getDate = getIntent().getExtras().getString("date");
-            final String getTime = getIntent().getExtras().getString("time");
+            final String getTitle = getIntent().getStringExtra("title");
+            final String getDesc = getIntent().getStringExtra("desc");
+            final String getDate = getIntent().getStringExtra("date");
+            final String getTime = getIntent().getStringExtra("time");
             title.setText(getTitle);
             desc.setText(getDesc);
             date.setText(getDate);
@@ -147,7 +138,7 @@ public class AddTask extends AppCompatActivity {
     }
 
     private void updateTask(Task task) {
-        String getKey = getIntent().getExtras().getString("key");
+        String getKey = getIntent().getStringExtra("key");
         taskDB.child("Task").child(getKey)
                 .setValue(task)
                 .addOnSuccessListener(aVoid -> {

@@ -73,14 +73,13 @@ public class MainActivity extends AppCompatActivity {
                 taskAdapter.setOnListTaskClick(new TaskAdapter.OnListClickListener() {
                     @Override
                     public void onListClickListener(ArrayList<Task> list, int postion) {
-                        Bundle bundle = new Bundle();
-                        bundle.putString("title", list.get(postion).getTask_title());
-                        bundle.putString("desc", list.get(postion).getTask_desc());
-                        bundle.putString("date", list.get(postion).getTask_date());
-                        bundle.putString("time", list.get(postion).getTask_time());
-                        bundle.putString("key", list.get(postion).getKey());
                         Intent intent = new Intent(MainActivity.this, AddTask.class);
-                        intent.putExtras(bundle);
+                        intent.putExtra("title", list.get(postion).getTask_title());
+                        intent.putExtra("desc", list.get(postion).getTask_desc());
+                        intent.putExtra("date", list.get(postion).getTask_date());
+                        intent.putExtra("time", list.get(postion).getTask_time());
+                        intent.putExtra("key", list.get(postion).getKey());
+                        intent.putExtra("status", "edit");
                         startActivity(intent);
                     }
                 });
@@ -88,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
                 taskAdapter.setDeleteClickListener(new TaskAdapter.DeleteClickListener() {
                     @Override
                     public void deleteItem(String key) {
-                        // TODO: 30/07/20 delete disini mba
                         if (mDatabase != null){
                             mDatabase.child("Task")
                                     .child(key)
@@ -111,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void toaddtask() {
         Intent i = new Intent(MainActivity.this, AddTask.class);
+        i.putExtra("status", "create");
         startActivity(i);
     }
 
