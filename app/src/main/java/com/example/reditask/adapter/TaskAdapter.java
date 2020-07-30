@@ -3,6 +3,7 @@ package com.example.reditask.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
     private ArrayList<Task> listTask;
     private OnListClickListener onListClickListener;
+    private DeleteClickListener deleteClickListener;
 
     public TaskAdapter(ArrayList<Task> listTask) {
         this.listTask = listTask;
@@ -24,6 +26,10 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
     public void setOnListTaskClick(OnListClickListener onListClickListener) {
         this.onListClickListener = onListClickListener;
+    }
+
+    public void setDeleteClickListener(DeleteClickListener deleteClickListener) {
+        this.deleteClickListener = deleteClickListener;
     }
 
     @NonNull
@@ -39,6 +45,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         holder.desc.setText(listTask.get(position).getTask_desc());
         holder.date.setText(listTask.get(position).getTask_date());
         holder.itemView.setOnClickListener(v -> onListClickListener.onListClickListener(listTask, position));
+        holder.delete.setOnClickListener(v -> deleteClickListener.deleteItem(listTask.get(position).getKey()));
     }
 
     @Override
@@ -46,19 +53,26 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         return listTask.size();
     }
 
+    public interface DeleteClickListener {
+        void deleteItem(String key);
+    }
+
+    public interface OnListClickListener {
+        void onListClickListener(ArrayList<Task> list, int postion);
+    }
+
     static class TaskViewHolder extends RecyclerView.ViewHolder {
 
         TextView title, desc, date;
+        Button delete;
 
         TaskViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.title_task);
             desc = itemView.findViewById(R.id.desc_task);
             date = itemView.findViewById(R.id.date_task);
+            delete = itemView.findViewById(R.id.hapus_button);
         }
     }
 
-    public interface OnListClickListener {
-        void onListClickListener(ArrayList<Task> list, int postion);
-    }
 }

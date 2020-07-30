@@ -21,9 +21,10 @@ import java.util.Calendar;
 public class AddTask extends AppCompatActivity {
     private static final String TAG = "AddTask";
     private static final String REQUIRED = "Required";
-    public EditText date, time, title, desc, newDate, newTime, newTitle, newDesc;
-    public Button submit, update;
+    public EditText date, time, title, desc;
+    public Button submit;
     private DatabaseReference taskDB;
+    private String status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,12 +32,13 @@ public class AddTask extends AppCompatActivity {
         setContentView(R.layout.activity_add_task);
         //[START Initialize DB]
         taskDB = FirebaseDatabase.getInstance().getReference();
-        getData();
         //[END Initialize DB]
 
         Toolbar toolbar = findViewById(R.id.addtoolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         date = findViewById(R.id.et_date);
         time = findViewById(R.id.et_time);
@@ -44,12 +46,14 @@ public class AddTask extends AppCompatActivity {
         desc = findViewById(R.id.et_taskdesc);
         submit = findViewById(R.id.bt_submit);
 
-        newDate = findViewById(R.id.et_date);
-        newTime = findViewById(R.id.et_time);
-        newTitle = findViewById(R.id.et_taskname);
-        newDesc = findViewById(R.id.et_taskdesc);
-        update = findViewById(R.id.bt_submit);
+        // Check Update or Create Form
+        checkUpdateOrCreateForm();
 
+        // Listener
+        listener();
+    }
+
+    private void listener() {
         date.setOnClickListener(view -> {
             Calendar now = Calendar.getInstance();
             DatePickerDialog dpd = DatePickerDialog.newInstance(
@@ -84,50 +88,62 @@ public class AddTask extends AppCompatActivity {
             String formDate = date.getText().toString();
             String formTime = time.getText().toString();
 
-            if (TextUtils.isEmpty(formTitle) || TextUtils.isEmpty(formDesc) || formDate == "Set Date" || formTime == "Set Time") {
-                Toast.makeText(this, "Data tidak boleh ada yang kosong!", Toast.LENGTH_SHORT).show();
-            } else {
-                taskDB.child("Task").push()
-                        .setValue(new Task(formTitle, formDesc, formDate, formTime))
-                        .addOnSuccessListener(this, aVoid -> {
-                            Toast.makeText(this, "Data berhasil disimpan", Toast.LENGTH_SHORT).show();
-                            title.setText("");
-                            desc.setText("");
-                            date.setText("Set Date");
-                            time.setText("Set Time");
-                        });
+            switch (status) {
+                case "edit":
+                    if (TextUtils.isEmpty(formTitle) || TextUtils.isEmpty(formDesc) || formDate == "Set Date" || formTime == "Set Time") {
+                        Toast.makeText(this, "Data tidak boleh ada yang kosong!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Task setTask = new Task();
+                        setTask.setTask_title(title.getText().toString());
+                        setTask.setTask_desc(desc.getText().toString());
+                        setTask.setTask_date(date.getText().toString());
+                        setTask.setTask_time(time.getText().toString());
+                        updateTask(setTask);
+                    }
+                    break;
+                case "create":
+                    if (TextUtils.isEmpty(formTitle) || TextUtils.isEmpty(formDesc) || formDate == "Set Date" || formTime == "Set Time") {
+                        Toast.makeText(this, "Data tidak boleh ada yang kosong!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        taskDB.child("Task").push()
+                                .setValue(new Task(formTitle, formDesc, formDate, formTime))
+                                .addOnSuccessListener(this, aVoid -> {
+                                    Toast.makeText(this, "Data berhasil disimpan", Toast.LENGTH_SHORT).show();
+                                    title.setText("");
+                                    desc.setText("");
+                                    date.setText("Set Date");
+                                    time.setText("Set Time");
+                                });
+                    }
+                    break;
             }
-        });
 
-        update.setOnClickListener(view -> {
-            String formTitle = newTitle.getText().toString();
-            String formDesc = newDesc.getText().toString();
-            String formDate = newDate.getText().toString();
-            String formTime = newTime.getText().toString();
 
-            if (TextUtils.isEmpty(formTitle) || TextUtils.isEmpty(formDesc) || formDate == "Set Date" || formTime == "Set Time") {
-                Toast.makeText(this, "Data tidak boleh ada yang kosong!", Toast.LENGTH_SHORT).show();
-            } else {
-                Task setTask = new Task();
-                setTask.setTask_title(newTitle.getText().toString());
-                setTask.setTask_desc(newDesc.getText().toString());
-                setTask.setTask_date(newDate.getText().toString());
-                setTask.setTask_time(newTime.getText().toString());
-                updateTask(setTask);
-            }
         });
     }
 
-    private void getData() {
-        final String getTitle = getIntent().getExtras().getString("title");
-        final String getDesc = getIntent().getExtras().getString("desc");
-        final String getDate = getIntent().getExtras().getString("date");
-        final String getTime = getIntent().getExtras().getString("time");
+    private void checkUpdateOrCreateForm() {
+        if (getIntent().getExtras() != null) {
+            if (getIntent().getExtras().getString("key") != null) {
+                getData();
+                status = "edit";
+            } else {
+                status = "create";
+            }
+        }
+    }
 
-        newTitle.setText(getTitle);
-        newDesc.setText(getDesc);
-        newDate.setText(getDate);
-        newTime.setText(getTime);
+    private void getData() {
+        if (getIntent().getExtras() != null) {
+            final String getTitle = getIntent().getExtras().getString("title");
+            final String getDesc = getIntent().getExtras().getString("desc");
+            final String getDate = getIntent().getExtras().getString("date");
+            final String getTime = getIntent().getExtras().getString("time");
+            title.setText(getTitle);
+            desc.setText(getDesc);
+            date.setText(getDate);
+            time.setText(getTime);
+        }
     }
 
     private void updateTask(Task task) {

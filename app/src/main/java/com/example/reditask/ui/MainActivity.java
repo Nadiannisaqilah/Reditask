@@ -45,10 +45,6 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> toaddtask());
 
-        listener();
-    }
-
-    private void listener() {
     }
 
     private void displayListTask() {
@@ -86,6 +82,14 @@ public class MainActivity extends AppCompatActivity {
                         Intent intent = new Intent(MainActivity.this, AddTask.class);
                         intent.putExtras(bundle);
                         startActivity(intent);
+                    }
+                });
+
+                taskAdapter.setDeleteClickListener(new TaskAdapter.DeleteClickListener() {
+                    @Override
+                    public void deleteItem(String key) {
+                        // TODO: 30/07/20 delete disini mba 
+                        Toast.makeText(MainActivity.this, key, Toast.LENGTH_SHORT).show();
                     }
                 });
             }
