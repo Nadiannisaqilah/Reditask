@@ -88,8 +88,15 @@ public class MainActivity extends AppCompatActivity {
                 taskAdapter.setDeleteClickListener(new TaskAdapter.DeleteClickListener() {
                     @Override
                     public void deleteItem(String key) {
-                        // TODO: 30/07/20 delete disini mba 
-                        Toast.makeText(MainActivity.this, key, Toast.LENGTH_SHORT).show();
+                        // TODO: 30/07/20 delete disini mba
+                        if (mDatabase != null){
+                            mDatabase.child("Task")
+                                    .child(key)
+                                    .removeValue()
+                                    .addOnSuccessListener(aVoid -> {
+                                        Toast.makeText(MainActivity.this, "Data berhasil dihapus!", Toast.LENGTH_SHORT).show();
+                                    });
+                        }
                     }
                 });
             }
