@@ -12,6 +12,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.example.reditask.R;
 import com.example.reditask.model.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
@@ -24,6 +25,8 @@ public class AddTask extends AppCompatActivity {
     public EditText date, time, title, desc;
     public Button submit;
     private DatabaseReference taskDB;
+    private FirebaseAuth mAuth;
+    private String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +34,7 @@ public class AddTask extends AppCompatActivity {
         setContentView(R.layout.activity_add_task);
         //[START Initialize DB]
         taskDB = FirebaseDatabase.getInstance().getReference();
+        mAuth = FirebaseAuth.getInstance();
         //[END Initialize DB]
 
         Toolbar toolbar = findViewById(R.id.addtoolbar);
@@ -49,6 +53,18 @@ public class AddTask extends AppCompatActivity {
         checkUpdateOrCreateForm();
         // Listener
         listener();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        if (mAuth.getCurrentUser() == null) {
+            startActivity(new Intent(AddTask.this, LoginActivity.class));
+            finish();
+        } else {
+            userID = mAuth.getCurrentUser().getUid();
+        }
     }
 
     private void listener() {
@@ -92,7 +108,7 @@ public class AddTask extends AppCompatActivity {
                     if (TextUtils.isEmpty(formTitle) || TextUtils.isEmpty(formDesc) || formDate == "Set Date" || formTime == "Set Time") {
                         Toast.makeText(this, "Data tidak boleh ada yang kosong!", Toast.LENGTH_SHORT).show();
                     } else {
-                        taskDB.child("Task").push()
+                        taskDB.child("Task").child(userID).push()
                                 .setValue(new Task(formTitle, formDesc, formDate, formTime))
                                 .addOnSuccessListener(this, aVoid -> {
                                     Toast.makeText(this, "Data berhasil disimpan", Toast.LENGTH_SHORT).show();
@@ -139,7 +155,7 @@ public class AddTask extends AppCompatActivity {
 
     private void updateTask(Task task) {
         String getKey = getIntent().getStringExtra("key");
-        taskDB.child("Task").child(getKey)
+        taskDB.child("Task").child(userID).child(getKey)
                 .setValue(task)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(this, "Data berhasil diubah", Toast.LENGTH_SHORT).show();
